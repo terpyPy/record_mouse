@@ -1,2 +1,4 @@
 
 *.pyc
+__pycache__/hotkeys.cpython-39.pyc
+__pycache__/ListenSettings.cpython-39.pyc
