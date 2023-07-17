@@ -3,6 +3,7 @@
 # record and playback mouse movements, and left clicks.
 # assign custom hotkeys to play back recordings, save recordings, ect.
 import time
+import threading
 from hotkeys import hkManager
 from ListenSettings import State_Resource, move_event, draging_event
 
@@ -30,10 +31,11 @@ def curserListener():
             print(line_pos('up'), end=line_pos('clear'))
 
         else:
-
-            print('playing back...')
-            time.sleep(0.01)
-            print(line_pos('up'), end=line_pos('clear'))
+            if keybinds.is_Held('ctrl+shift+q'):
+                state.stop()
+            
+            time.sleep(0.021)
+            # print(line_pos('up'), end=line_pos('clear'))
     else:
         print(line_pos('down'), end=line_pos('clear'))
         print(f'\nquitting...\nlast position: {state.positionStr}')
@@ -51,7 +53,7 @@ def playing():
                              'leftClick'])
     # if a recording json exists, play it
     try:
-        record_list = state.loadEvents('recordings.json')
+        record_list = state.loadEvents()
     except FileNotFoundError:
         print('no recording file found')
         record_list = None
@@ -82,4 +84,6 @@ if __name__ == '__main__':
                           'ctrl+shift+p',
                           'ctrl+shift+s',
                           'leftClick'])
-    curserListener()
+    # create a thread to listen for mouse position
+    t = threading.Thread(target=curserListener)
+    t.start()
