@@ -1,7 +1,9 @@
 #!/usr/bin/python3
 import json
-import pyautogui
 import time
+import pyautogui
+import PySimpleGUI as sg
+
 # global variables, not in class to be used in other modules as needed
 LINE_UP = '\033[1A'
 LINE_DOWN = '\033[1B'
@@ -11,7 +13,6 @@ HOME_CURSOR = '\033[0;0H'
 move_event = 0
 left_click_event = 1
 draging_event = 2
-
 
 class State_Resource:
     def __init__(self):
@@ -23,6 +24,7 @@ class State_Resource:
                           'home': HOME_CURSOR}
         self.playingBack = False
         self.record_list = []
+        
 
     def __repr__(self):
         return f'State_Resource(run={self.run}, positionStr={self.positionStr})'
@@ -63,13 +65,14 @@ class State_Resource:
 
     def stop(self):
         self.run = False
+        
 
     def onLeftClick(self):
         x, y = pyautogui.position()
         print(self.line_pos('down'), end=self.line_pos('clear'))
         print(f'left click at: {x}, {y}', end=self.line_pos('down'))
         self.record_list.append((left_click_event, (x, y)))
-        # time.sleep(0.02)
+        time.sleep(0.1)
 
     def playRecording(self, recording=None):
         if recording is None:
@@ -77,11 +80,13 @@ class State_Resource:
         # clear the recording list
         for event in recording:
             eventType, eventPos = event
-
+            
             if eventType == move_event:
                 pyautogui.moveTo(eventPos)
+                
             elif eventType == left_click_event:
                 pyautogui.click(eventPos)
+                
             elif eventType == draging_event:
                 pyautogui.dragTo(eventPos)
 
@@ -89,12 +94,15 @@ class State_Resource:
         return pyautogui.position()
     
     def saveEvents(self):
-        with open(f'recordings.json', 'w') as f:
-            json.dump(self.record_list, f)
+        toSave = self.record_list.copy()
+        name = sg.popup_get_text('enter a name for the recording: ')
+        with open(f'{name}.json', 'w') as f:
+            json.dump(toSave, f)
         f.close()
         
-    def loadEvents(self, fileName):
-        with open(fileName, 'r') as f:
+    def loadEvents(self):
+        fileName = sg.popup_get_file('enter the name of the recording: ')
+        with open(f'{fileName}', 'r') as f:
             record_list = json.load(f)
         f.close()
         return record_list
