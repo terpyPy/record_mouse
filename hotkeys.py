@@ -62,3 +62,6 @@ class hkManager:
     # make a wrapper for mouse.is_pressed(button='')
     def is_pressed(self, button):
         return mouse.is_pressed(button=button)
+    
+    def is_Held(self, keysDown:str):
+       return keyboard.is_pressed(keysDown)
