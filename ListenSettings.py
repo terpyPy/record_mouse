@@ -16,7 +16,7 @@ draging_event = 2
 
 class State_Resource:
     def __init__(self):
-        self.run = bool
+        self.run = False
         self.positionStr = 'default'
         self.line_dict = {'up': LINE_UP,
                           'down': LINE_DOWN,
@@ -40,7 +40,7 @@ class State_Resource:
         return self._line_dict
 
     @line_dict.setter
-    def line_dict(self, value):
+    def line_dict(self, value:dict):
         self._line_dict = value
 
     @property
@@ -48,7 +48,7 @@ class State_Resource:
         return self._run
 
     @run.setter
-    def run(self, value):
+    def run(self, value:bool):
         self._run = value
 
     @property
