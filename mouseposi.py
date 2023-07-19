@@ -12,7 +12,6 @@ state = State_Resource()
 state.run = True
 line_pos = state.line_pos
 
-
 def curserListener():
     print('ctrl+shift+q to quit.')
     while state.run:
@@ -46,15 +45,17 @@ def curserListener():
 def playing():
     """plays back the recording asynchronously"""
     state.playingBack = True
+    
+    print(line_pos('down'), end=line_pos('clear'))
     print('starting playback...')
+    keyStrs = keybinds.getBinds(exclude=['ctrl+shift+q'])
     # Prevent hook for click from recording itself in playback
-    keybinds.remove_hotkeys(['ctrl+shift+p',
-                             'ctrl+shift+s',
-                             'leftClick'])
+    keybinds.remove_hotkeys(keyStrs[::])
+    
     # if a recording json exists, play it
     try:
         record_list = state.loadEvents()
-    except FileNotFoundError:
+    except:
         print('no recording file found')
         record_list = None
 
@@ -63,27 +64,25 @@ def playing():
     state.record_list.clear()
 
     # restart the hooks for click and playback
-    keybinds.add_hotkeys(['ctrl+shift+p',
-                          'ctrl+shift+s',
-                          'leftClick'])
+    keybinds.add_hotkeys(keyStrs[::])
     state.playingBack = False
-
+    time.sleep(0.1)
 
 def saveRecording():
     """save the recording asynchronously"""
+    print(line_pos('down'), end=line_pos('clear'))
     print('saving recording...')
     state.saveEvents()
+    time.sleep(0.1)
 
 if __name__ == '__main__':
     keybinds.init_funcs_to_dict([state.stop,
                                  playing,
                                  saveRecording,
+                                 state.modify_recording,
                                  state.onLeftClick])
 
-    keybinds.add_hotkeys(['ctrl+shift+q',
-                          'ctrl+shift+p',
-                          'ctrl+shift+s',
-                          'leftClick'])
+    curserScan = threading.Thread(target=curserListener)
+    keybinds.add_hotkeys(keybinds.getBinds())
     # create a thread to listen for mouse position
-    t = threading.Thread(target=curserListener)
-    t.start()
+    curserScan.start()
