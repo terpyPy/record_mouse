@@ -2,6 +2,7 @@
 # class to handle hotkeys key combos are: ctrl+shift+<key> 
 import keyboard
 import mouse
+import json
 
 class hkManager:
     def __init__(self) -> None:
@@ -13,10 +14,21 @@ class hkManager:
         3.('ctrl+shift+s', saveRecording)\n
         4.(state.onLeftClick)
         """
-        self.keyBinds = {'ctrl+shift+q': 1,
-                         'ctrl+shift+p': 2,
-                         'ctrl+shift+s': 3,
-                         'leftClick': 4}
+        self.keyBinds = json.load(open(f'keyBindReg.json', 'r'))
+        
+    def __str__(self) -> str:
+        return f'hotkeys registered in "keyBindReg.json":\n{self.keyBinds}'
+        
+    def getBinds(self,exclude:list=[]):
+        """returns a list of the keyBinds dict keys
+
+        Args:
+            exclude (list, optional): list of keys to exclude from the list. Defaults to [].
+
+        Returns:
+            list: list of keyBinds dict keys
+        """
+        return [key for key in self.keyBinds.keys() if key not in exclude]
         
     def init_funcs_to_dict(self, funcs:list):
         """maps the functions to the keyBinds dict
@@ -65,3 +77,7 @@ class hkManager:
     
     def is_Held(self, keysDown:str):
        return keyboard.is_pressed(keysDown)
+   
+if __name__ == "__main__":
+    t = hkManager()
+    print(t)
