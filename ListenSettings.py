@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+import numpy as np
 import json
 import time
 import pyautogui
@@ -66,7 +67,6 @@ class State_Resource:
     def stop(self):
         self.run = False
         
-
     def onLeftClick(self):
         x, y = pyautogui.position()
         print(self.line_pos('down'), end=self.line_pos('clear'))
@@ -93,8 +93,12 @@ class State_Resource:
     def getPos(self):
         return pyautogui.position()
     
-    def saveEvents(self):
-        toSave = self.record_list.copy()
+    def saveEvents(self, toSave=None):
+        if toSave is None:
+            toSave = self.record_list.copy()
+        else:
+            toSave = toSave.copy()
+            
         name = sg.popup_get_text('enter a name for the recording: ')
         with open(f'{name}.json', 'w') as f:
             json.dump(toSave, f)
@@ -102,7 +106,37 @@ class State_Resource:
         
     def loadEvents(self):
         fileName = sg.popup_get_file('enter the name of the recording: ')
-        with open(f'{fileName}', 'r') as f:
-            record_list = json.load(f)
-        f.close()
+        record_list = json.load(open(fileName, 'r'))
         return record_list
+    
+    def modify_recording(self, newOrigin=None):
+        """modify the recording by setting start x,y coords to (0,0),
+        and translating the rest of the coords accordingly"""
+        # load the recording, shows popup to browse for file
+        record_list = self.loadEvents()
+        result = []
+        startPos = record_list[0][1]
+        # separate events and coords into separate lists
+        events = [event[0] for event in record_list]
+        coords = np.array([event[1] for event in record_list]) 
+        modified_coords = coords - startPos
+        newOrigin = sg.popup_get_text('enter a new origin for the recording: (x,y)')
+        if newOrigin is None:
+            # find min x and y values if negative
+            min_x = min(modified_coords[:,0])
+            min_y = min(modified_coords[:,1])
+            # translate the coords to be positive
+            modified_coords += abs(min_x), abs(min_y)
+        else:
+            newOrigin = tuple(map(int, newOrigin.split(',')))
+            modified_coords += newOrigin
+        # combine the modified coords and events into a list of tuples
+        result = list(zip(events, modified_coords.tolist()))
+        # save the modified recording
+        self.saveEvents(toSave=result)
+        time.sleep(0.1)
+        
+if __name__ == "__main__":
+    t = State_Resource()
+    t.modify_recording((60, 60))
+    
