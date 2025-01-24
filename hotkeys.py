@@ -5,19 +5,19 @@ import mouse
 import json
 
 class hkManager:
-    def __init__(self) -> None:
+    def __init__(self,file='keyBindReg.json') -> None:
         """
         summary: object to manage hotkeys and bind them to functions,
-        the numeric values will map to the functions listed below, in order.\n
-        1.('ctrl+shift+q', state.stop)\n 
-        2.('ctrl+shift+p', playing)\n
-        3.('ctrl+shift+s', saveRecording)\n
-        4.(state.onLeftClick)
+        the numeric values will map to the functions listed below, in order.\n example:
+        {'ctrl+shift+1': function name}\n 
+    
         """
-        self.keyBinds = json.load(open(f'keyBindReg.json', 'r'))
+        self.file = file
+        self.keyBinds = json.load(open(file, 'r'))
+        self.warning = False
         
     def __str__(self) -> str:
-        return f'hotkeys registered in "keyBindReg.json":\n{self.keyBinds}'
+        return f'hotkeys registered in {self.file}:\n{self.keyBinds}'
         
     def getBinds(self,exclude:list=[]):
         """returns a list of the keyBinds dict keys
@@ -31,11 +31,13 @@ class hkManager:
         return [key for key in self.keyBinds.keys() if key not in exclude]
         
     def init_funcs_to_dict(self, funcs:list):
-        """maps the functions to the keyBinds dict
+        """DEPRECATED: maps the functions to the keyBinds dict
 
         Args:
             funcs (list): list of functions to map to the keyBinds dict
         """
+        print('DEPRECATED: function names are now read from the keyBindReg.json file.\n')
+        self.warning = True
         self.keyBinds = dict(zip(self.keyBinds.keys(), funcs))
         
     def add_hotkeys(self, hotkeys:list):
@@ -45,12 +47,9 @@ class hkManager:
             hotkeys (list): list of strings that are either:
                 'key combos'|'mouse events' to hook.
         """
-        if 'leftClick' in hotkeys:
-            mouse.on_click(self.keyBinds['leftClick'])
-            hotkeys.remove('leftClick')
-        
         for key in hotkeys:
-            keyboard.add_hotkey(key, self.keyBinds[key])
+            target = getattr(self, self.keyBinds[key])
+            keyboard.add_hotkey(key, target)
             
     def remove_hotkeys(self, hotkeys:list):
         """removes hotkeys from the keyboard and mouse hooks
@@ -59,9 +58,6 @@ class hkManager:
             hotkeys (list): list of strings that are either:
                 'key combos'|'mouse events' to unhook.
         """
-        if 'leftClick' in hotkeys:
-            mouse.unhook_all()
-            hotkeys.remove('leftClick')
         
         for key in hotkeys:
             keyboard.remove_hotkey(key)
@@ -78,6 +74,16 @@ class hkManager:
     def is_Held(self, keysDown:str):
        return keyboard.is_pressed(keysDown)
    
+    def wait(self, keysDown:str):
+        return keyboard.wait(keysDown)
+
+    def write(self, text:str):
+        return keyboard.write(text)
+       
+    
 if __name__ == "__main__":
-    t = hkManager()
+    t = hkManager(file='keyBindReg_german.json')
+    # t.add_hotkeys(t.getBinds())
+    # start the listener, exit with ctrl+shift+q
+    # t.wait('ctrl+shift+q')
     print(t)
