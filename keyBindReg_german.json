@@ -1,1 +1,14 @@
-{"ctrl+alt+b": "esset", "ctrl+alt+a": "a_umlaut", "ctrl+alt+o": "o_umlaut", "ctrl+alt+u": "u_umlaut", "ctrl+alt+5": "test_char"}
+{
+    "binds": {
+        "ctrl+alt+b": "ß", 
+        "ctrl+alt+a": "ä",
+        "ctrl+alt+o": "ö", 
+        "ctrl+alt+u": "ü", 
+        "alt+a+shift": "Ä",
+        "alt+o+shift": "Ö",
+        "alt+u+shift": "Ü"
+    },
+    "config": {
+        "capitalize": false
+    }
+}

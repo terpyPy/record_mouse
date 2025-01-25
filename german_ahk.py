@@ -6,27 +6,28 @@ class German_AHK(hkManager):
         
     def esset(self):
         print('ß')
-        # type the esset character
+        # 
         self.write('ß')
         
     def a_umlaut(self):
         print('ä')
-        # type the a_umlaut character
+        # 
         self.write('ä')
         
     def o_umlaut(self):
         print('ö')
-        # type the o_umlaut character
+        # 
         self.write('ö')
         
     def u_umlaut(self):
         print('ü')
-        # type the u_umlaut character
+        # 
         self.write('ü')
         
     def test_char(self):
-        # test the esset character
-        print('ß')
+        # test bind
+        print('not bound')
+        
     # create __repr__ method to print all function names
     def __repr__(self):
         """returns a string representation of the class, can be used to recreate the keyReg """
@@ -47,4 +48,3 @@ hk.add_hotkeys(hk.getBinds())
 # start the listener, exit with ctrl+shift+q
 hk.wait('ctrl+shift+q')
 print(hk)
-print(repr(hk))
