@@ -1,0 +1,14 @@
+{
+    "binds": {
+        "ctrl+alt+b": "\u00df",
+        "ctrl+alt+a": "\u00e4",
+        "ctrl+alt+o": "\u00f6",
+        "ctrl+alt+u": "\u00fc",
+        "alt+a+shift": "\u00c4",
+        "alt+o+shift": "\u00d6",
+        "alt+u+shift": "\u00dc"
+    },
+    "settings": {
+        "capitalize": false
+    }
+}
